@@ -1,12 +1,13 @@
 
 import React, { useState } from 'react'
 import Like from './Like'
-import blogService from '../services/blogs'
+import { removeBlog } from '../reducers/BlogReducer'
+import { useDispatch } from 'react-redux'
 
 
 const Blog = ({ blog, user }) => {
   const [visible, setVisible] = useState(false)
-
+  const dispatch = useDispatch()
   const hideWhenVisible = { display: visible ? 'none' : '' }
   const showWhenVisible = { display: visible ? '' : 'none' }
   const tyyli = { borderStyle: 'solid' }
@@ -17,22 +18,10 @@ const Blog = ({ blog, user }) => {
     return(<button id='remove' onClick={handleRemove}>remove</button>)
   }
   const handleRemove = async () => {
-    if(window.confirm('Are you sure you want remove this blog?')){
-      await blogService.deleteBlog(blog.id)
-      //setBlogs((await blogService.getAll()).sort((a,b) => b.likes-a.likes))
-    }
+    const ok = window.confirm('Are you sure you want to remove ' + blog.title)
+    if(ok) dispatch(removeBlog(blog.id))
   }
-  const addLike = async () => {
-    const newBlog = {
-      user: blog.user.id,
-      likes: blog.likes +1,
-      author: blog.author,
-      title: blog.title,
-      url: blog.url
-    }
-    await blogService.updateBlog(newBlog,blog.id)
-    //setBlogs((await blogService.getAll()).sort((a,b) => b.likes-a.likes))
-  }
+
   //console.log(user)
   //console.log(blog.user.id)
 
@@ -45,7 +34,7 @@ const Blog = ({ blog, user }) => {
         <p>{blog.title} <button onClick={toggleVisibility}>hide</button></p>
         <p>{blog.author}</p>
         <p>{blog.url}</p>
-        <p>{blog.likes} <Like blog = {blog} addLike = {addLike}/></p>
+        <p>{blog.likes} <Like blog = {blog}/></p>
         {user.username === blog.user.username && removebutton()}
       </div>
     </div>

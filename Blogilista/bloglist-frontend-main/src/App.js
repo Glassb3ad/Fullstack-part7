@@ -165,7 +165,7 @@ const App = () => {
     //console.log(JSON.parse(window.localStorage.getItem('loggedUser')))
     if(JSON.parse(window.localStorage.getItem('loggedUser')) !== null) blogService.setToken(JSON.parse(window.localStorage.getItem('loggedUser')).token)
   }, [])
-  const blogs = (useSelector(state => state.blogs)).sort((a,b) => b.likes-a.likes)
+  let blogs = (useSelector(state => state.blogs)).sort((a,b) => b.likes-a.likes)
   return (
     <div>
       <h1>Blogs</h1>

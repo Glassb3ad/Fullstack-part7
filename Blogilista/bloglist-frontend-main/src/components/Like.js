@@ -1,8 +1,12 @@
 /* eslint-disable linebreak-style */
+import { addLike } from '../reducers/BlogReducer'
+import { useDispatch } from 'react-redux'
+
 import React from 'react'
-const Like = ({ addLike }) => {
+const Like = ({ blog }) => {
+  const dispatch = useDispatch()
   return (
-    <button id='like' type="button" onClick={addLike}>like</button>
+    <button id='like' type="button" onClick= {() => {dispatch(addLike(blog))}}>like</button>
   )
 }
 
