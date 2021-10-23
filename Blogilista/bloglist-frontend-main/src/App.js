@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import React, { useState, useEffect, useRef,  useImperativeHandle  } from 'react'
+import React, { useState, useEffect, useRef,  useImperativeHandle } from 'react'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login'
@@ -8,14 +8,27 @@ import PropTypes from 'prop-types'
 import { useDispatch, useSelector } from 'react-redux'
 import { setNotification1 } from './reducers/notificationReducer'
 import { initializeBlogs, addBlog } from './reducers/BlogReducer'
-import { Switch, Route } from 'react-router-dom'
+import { Switch, Route, useParams, Link } from 'react-router-dom'
 //import Users from './components/Users'
 import userService from './services/users'
 
+const SingleUser = ({ users }) => {
+  if(!users)return <></>
+  const id = useParams().id
+  const user = users.find(a => a.id === id)
+  if(!user) return <>No such user</>
+  return(<div>
+    <h2>{user.name}</h2>
+    <h3>added blogs</h3>
+    <ul>
+      {user.blogs.map(a => <li key={a.id}>{ a.title }</li>)}
+    </ul>
+  </div>)
+}
 
 const User = (props) => (
   <tr key = {props.key}>
-    <th>{props.user.name}</th>
+    <th><Link to={`/users/${props.user.id}`}> {props.user.name} </Link></th>
     <th>{props.user.blogs.length}</th>
   </tr>)
 
@@ -187,21 +200,31 @@ const App = () => {
     setAuthor('')
     setUrl('')
   }
+
   useEffect(async () => {
+    //console.log(users(users))
+    //console.log(SingleUser())
+    console.log('hello')
     setUsers(await userService.getAll())
     dispatch(initializeBlogs())
     setUser(JSON.parse(window.localStorage.getItem('loggedUser')))
     //console.log(JSON.parse(window.localStorage.getItem('loggedUser')))
     if(JSON.parse(window.localStorage.getItem('loggedUser')) !== null) blogService.setToken(JSON.parse(window.localStorage.getItem('loggedUser')).token)
   }, [])
+
   let blogs = (useSelector(state => state.blogs)).sort((a,b) => b.likes-a.likes)
+
+  console.log(users)
   return (
     <div>
       <h1>Blogs</h1>
       <Notification errorMessage = {errorMessage}/>
       <Login user = {user} username = {username} password={password} setUsername = {setUsername} setPassword = {setPassword} handleLogin = {handleLogin} logOut = {logOut}/>
       <Switch>
-        <Route path = "/allUserss">
+        <Route path = "/users/:id">
+          <SingleUser users = {users} />
+        </Route>
+        <Route path = "/users">
           <Users users={users}/>
         </Route>
         <Route path="/">
