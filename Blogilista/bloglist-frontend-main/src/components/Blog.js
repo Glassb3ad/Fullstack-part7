@@ -3,6 +3,7 @@ import React, { useState } from 'react'
 import Like from './Like'
 import { removeBlog } from '../reducers/BlogReducer'
 import { useDispatch } from 'react-redux'
+import { Link } from 'react-router-dom'
 
 
 const Blog = ({ blog, user }) => {
@@ -28,7 +29,7 @@ const Blog = ({ blog, user }) => {
   return (
     <div className = 'blog' style = {tyyli}>
       <div style={hideWhenVisible}>
-        <p>{blog.title} {blog.author}<button id='view' onClick={toggleVisibility}>view</button></p>
+        <p><Link to={`/blogs/${blog.id}`}> {blog.title} </Link> {blog.author}<button id='view' onClick={toggleVisibility}>view</button></p>
       </div>
       <div style={showWhenVisible} className="testDiv">
         <p>{blog.title} <button onClick={toggleVisibility}>hide</button></p>

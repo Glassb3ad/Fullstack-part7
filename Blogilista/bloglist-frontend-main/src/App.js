@@ -12,6 +12,13 @@ import { Switch, Route, useParams, Link } from 'react-router-dom'
 //import Users from './components/Users'
 import userService from './services/users'
 
+const SingleBlog = ({ user }) => {
+  const id = useParams().id
+  const blogs = useSelector(state => state.blogs)
+  const blog = blogs.find(a => a.id === id)
+  if(blog) return (<Blog key={blog.id} blog={blog} user = {user}/>)
+  return <></>
+}
 const SingleUser = ({ users }) => {
   if(!users)return <></>
   const id = useParams().id
@@ -73,7 +80,7 @@ const Login = (props) => {
   const userLogged = () => {
     return (
       <>
-        <p>{user.name} logged in</p>
+        <>{user.name} logged in</>
         <button type = "button" onClick = {props.logOut}>log out</button>
       </>
     )}
@@ -204,7 +211,7 @@ const App = () => {
   useEffect(async () => {
     //console.log(users(users))
     //console.log(SingleUser())
-    console.log('hello')
+    //console.log('hello')
     setUsers(await userService.getAll())
     dispatch(initializeBlogs())
     setUser(JSON.parse(window.localStorage.getItem('loggedUser')))
@@ -214,18 +221,25 @@ const App = () => {
 
   let blogs = (useSelector(state => state.blogs)).sort((a,b) => b.likes-a.likes)
 
-  console.log(users)
+  //console.log(users)
   return (
     <div>
+      <div>
+        <Link style ={{ padding: 5 }}to='/'>Blogs</Link>
+        <Link style ={{ padding: 5 }} to='/users'>Users</Link>
+        <Login user = {user} username = {username} password={password} setUsername = {setUsername} setPassword = {setPassword} handleLogin = {handleLogin} logOut = {logOut}/>
+      </div>
       <h1>Blogs</h1>
       <Notification errorMessage = {errorMessage}/>
-      <Login user = {user} username = {username} password={password} setUsername = {setUsername} setPassword = {setPassword} handleLogin = {handleLogin} logOut = {logOut}/>
       <Switch>
         <Route path = "/users/:id">
           <SingleUser users = {users} />
         </Route>
         <Route path = "/users">
           <Users users={users}/>
+        </Route>
+        <Route path = "/blogs/:id">
+          <SingleBlog user={user}/>
         </Route>
         <Route path="/">
           <h2>All blogs</h2>
