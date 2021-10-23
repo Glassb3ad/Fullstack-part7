@@ -4,7 +4,7 @@ import Like from './Like'
 import blogService from '../services/blogs'
 
 
-const Blog = ({ blog, setBlogs, user }) => {
+const Blog = ({ blog, user }) => {
   const [visible, setVisible] = useState(false)
 
   const hideWhenVisible = { display: visible ? 'none' : '' }
@@ -19,7 +19,7 @@ const Blog = ({ blog, setBlogs, user }) => {
   const handleRemove = async () => {
     if(window.confirm('Are you sure you want remove this blog?')){
       await blogService.deleteBlog(blog.id)
-      setBlogs((await blogService.getAll()).sort((a,b) => b.likes-a.likes))
+      //setBlogs((await blogService.getAll()).sort((a,b) => b.likes-a.likes))
     }
   }
   const addLike = async () => {
@@ -31,7 +31,7 @@ const Blog = ({ blog, setBlogs, user }) => {
       url: blog.url
     }
     await blogService.updateBlog(newBlog,blog.id)
-    setBlogs((await blogService.getAll()).sort((a,b) => b.likes-a.likes))
+    //setBlogs((await blogService.getAll()).sort((a,b) => b.likes-a.likes))
   }
   //console.log(user)
   //console.log(blog.user.id)

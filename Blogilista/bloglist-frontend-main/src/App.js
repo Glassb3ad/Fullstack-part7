@@ -6,6 +6,7 @@ import './index.css'
 import PropTypes from 'prop-types'
 import { useDispatch, useSelector } from 'react-redux'
 import { setNotification1 } from './reducers/notificationReducer'
+import { initializeBlogs, addBlog } from './reducers/BlogReducer'
 
 const Login = (props) => {
   const username = props.username
@@ -88,7 +89,7 @@ Togglable.propTypes = {
 }
 
 const Notification = (props) => {
-  const notification = useSelector(state => state)
+  const notification = useSelector(state => state.notification)
   if (notification !== null) return (
     <div className = "noti">
       <p>{notification}</p>
@@ -107,7 +108,6 @@ Blog.propTypes = {
 }
 
 const App = () => {
-  const [blogs, setBlogs] = useState([])
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
@@ -151,9 +151,8 @@ const App = () => {
       url: url
     }
     //console.log(newBlog)
-    const response = await blogService.postNewBlog(newBlog)
-    console.log(response)
-    setBlogs((await blogService.getAll()).sort((a,b) => b.likes-a.likes))
+    dispatch(addBlog(newBlog))
+    //setBlogs((await blogService.getAll()).sort((a,b) => b.likes-a.likes))
     blogFormRef.current.toggleVisibility()
     dispatch(setNotification1(`${user.name} added a new blog named ${title}`,5))
     setTitle('')
@@ -161,14 +160,12 @@ const App = () => {
     setUrl('')
   }
   useEffect(() => {
-    blogService.getAll().then(blogs =>
-      setBlogs( blogs.sort((a,b) => b.likes-a.likes) )
-    )
+    dispatch(initializeBlogs())
     setUser(JSON.parse(window.localStorage.getItem('loggedUser')))
     //console.log(JSON.parse(window.localStorage.getItem('loggedUser')))
     if(JSON.parse(window.localStorage.getItem('loggedUser')) !== null) blogService.setToken(JSON.parse(window.localStorage.getItem('loggedUser')).token)
   }, [])
-
+  const blogs = (useSelector(state => state.blogs)).sort((a,b) => b.likes-a.likes)
   return (
     <div>
       <h1>Blogs</h1>
@@ -176,7 +173,7 @@ const App = () => {
       <Login user = {user} username = {username} password={password} setUsername = {setUsername} setPassword = {setPassword} handleLogin = {handleLogin} logOut = {logOut}/>
       <h2>All blogs</h2>
       {user !== null && blogs.map(blog =>
-        <Blog key={blog.id} blog={blog} setBlogs = {setBlogs} user = {user}/>
+        <Blog key={blog.id} blog={blog} user = {user}/>
       )}
       <Togglable buttonLabel = "create new blog" ref={blogFormRef}>
         <CreateNewBlog user = {user}   title = {title} setTitle = {setTitle}  author = {author} setAuthor = {setAuthor}  url ={url} setUrl = {setUrl} handlePost = {handlePost}/>
@@ -186,3 +183,4 @@ const App = () => {
 }
 
 export default { App, CreateNewBlog }
+//blogs.sort((a,b) => b.likes-a.likes)
