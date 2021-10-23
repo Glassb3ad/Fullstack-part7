@@ -4,6 +4,8 @@ import blogService from './services/blogs'
 import loginService from './services/login'
 import './index.css'
 import PropTypes from 'prop-types'
+import { useDispatch, useSelector } from 'react-redux'
+import { setNotification1 } from './reducers/notificationReducer'
 
 const Login = (props) => {
   const username = props.username
@@ -86,9 +88,10 @@ Togglable.propTypes = {
 }
 
 const Notification = (props) => {
-  if (props.notiMessage !== null) return (
+  const notification = useSelector(state => state)
+  if (notification !== null) return (
     <div className = "noti">
-      <p>{props.notiMessage}</p>
+      <p>{notification}</p>
     </div>
   )
   if (props.errorMessage !== null) return (
@@ -109,11 +112,11 @@ const App = () => {
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
   const [errorMessage, setErrorMessage] = useState(null)
-  const [notiMessage, setNotiMessage] = useState(null)
   const [title, setTitle] = useState('')
   const [author, setAuthor] = useState('')
   const [url, setUrl] = useState('')
   const blogFormRef = useRef()
+  const dispatch = useDispatch()
 
   const handleLogin = async (event) => {
     event.preventDefault()
@@ -152,13 +155,10 @@ const App = () => {
     console.log(response)
     setBlogs((await blogService.getAll()).sort((a,b) => b.likes-a.likes))
     blogFormRef.current.toggleVisibility()
-    setNotiMessage(`${user.name} added a new blog named ${title}`)
+    dispatch(setNotification1(`${user.name} added a new blog named ${title}`,5))
     setTitle('')
     setAuthor('')
     setUrl('')
-    setTimeout(() => {
-      setNotiMessage(null)
-    }, 5000)
   }
   useEffect(() => {
     blogService.getAll().then(blogs =>
@@ -172,7 +172,7 @@ const App = () => {
   return (
     <div>
       <h1>Blogs</h1>
-      <Notification errorMessage = {errorMessage} notiMessage = {notiMessage}/>
+      <Notification errorMessage = {errorMessage}/>
       <Login user = {user} username = {username} password={password} setUsername = {setUsername} setPassword = {setPassword} handleLogin = {handleLogin} logOut = {logOut}/>
       <h2>All blogs</h2>
       {user !== null && blogs.map(blog =>
