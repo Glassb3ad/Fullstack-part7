@@ -1,0 +1,19 @@
+.noti {
+    color: rgb(0, 43, 2);
+    background: rgba(18, 235, 54, 0.39);
+    font-size: 15px;
+    border-style: solid;
+    border-radius: 5px;
+    padding: 5px;
+    margin-bottom: 10px;
+  }
+
+  .err {
+    color: rgb(0, 0, 0);
+    background: rgba(255, 41, 41, 0.397);
+    font-size: 15px;
+    border-style: solid;
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 10px;
+  }
