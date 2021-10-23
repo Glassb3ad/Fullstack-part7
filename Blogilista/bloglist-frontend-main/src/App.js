@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useState, useEffect, useRef,  useImperativeHandle  } from 'react'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
@@ -7,6 +8,32 @@ import PropTypes from 'prop-types'
 import { useDispatch, useSelector } from 'react-redux'
 import { setNotification1 } from './reducers/notificationReducer'
 import { initializeBlogs, addBlog } from './reducers/BlogReducer'
+import { Switch, Route } from 'react-router-dom'
+//import Users from './components/Users'
+import userService from './services/users'
+
+
+const User = (props) => (
+  <tr key = {props.key}>
+    <th>{props.user.name}</th>
+    <th>{props.user.blogs.length}</th>
+  </tr>)
+
+const Users = (props) => {
+  const arr = props.users
+  return (
+    <div>
+      <h2>Users</h2>
+      <table>
+        <tr>
+          <th>Names</th>
+          <th>Number of blogs</th>
+        </tr>
+        {arr.map(a => <User key={a.id} user = {a}/>)}
+      </table>
+    </div>
+  )
+}
 
 const Login = (props) => {
   const username = props.username
@@ -115,6 +142,7 @@ const App = () => {
   const [title, setTitle] = useState('')
   const [author, setAuthor] = useState('')
   const [url, setUrl] = useState('')
+  const [users, setUsers] = useState([])
   const blogFormRef = useRef()
   const dispatch = useDispatch()
 
@@ -159,7 +187,8 @@ const App = () => {
     setAuthor('')
     setUrl('')
   }
-  useEffect(() => {
+  useEffect(async () => {
+    setUsers(await userService.getAll())
     dispatch(initializeBlogs())
     setUser(JSON.parse(window.localStorage.getItem('loggedUser')))
     //console.log(JSON.parse(window.localStorage.getItem('loggedUser')))
@@ -171,13 +200,20 @@ const App = () => {
       <h1>Blogs</h1>
       <Notification errorMessage = {errorMessage}/>
       <Login user = {user} username = {username} password={password} setUsername = {setUsername} setPassword = {setPassword} handleLogin = {handleLogin} logOut = {logOut}/>
-      <h2>All blogs</h2>
-      {user !== null && blogs.map(blog =>
-        <Blog key={blog.id} blog={blog} user = {user}/>
-      )}
-      <Togglable buttonLabel = "create new blog" ref={blogFormRef}>
-        <CreateNewBlog user = {user}   title = {title} setTitle = {setTitle}  author = {author} setAuthor = {setAuthor}  url ={url} setUrl = {setUrl} handlePost = {handlePost}/>
-      </Togglable>
+      <Switch>
+        <Route path = "/allUserss">
+          <Users users={users}/>
+        </Route>
+        <Route path="/">
+          <h2>All blogs</h2>
+          {user !== null && blogs.map(blog =>
+            <Blog key={blog.id} blog={blog} user = {user}/>
+          )}
+          <Togglable buttonLabel = "create new blog" ref={blogFormRef}>
+            <CreateNewBlog user = {user}   title = {title} setTitle = {setTitle}  author = {author} setAuthor = {setAuthor}  url ={url} setUrl = {setUrl} handlePost = {handlePost}/>
+          </Togglable>
+        </Route>
+      </Switch>
     </div>
   )
 }
