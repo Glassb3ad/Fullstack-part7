@@ -11,6 +11,7 @@ import { initializeBlogs, addBlog } from './reducers/BlogReducer'
 import { Switch, Route, useParams, Link } from 'react-router-dom'
 //import Users from './components/Users'
 import userService from './services/users'
+import { Form, Button, Alert, Navbar, Nav } from 'react-bootstrap'
 
 const SingleBlog = ({ user }) => {
   const id = useParams().id
@@ -62,26 +63,24 @@ const Login = (props) => {
   const userNotLogged = () => {
     return (
       <div>
-        Login
-        <form onSubmit = {props.handleLogin}>
-          <div>
-            username
-            <input id = "username" type="text" value = {username} name="Username" onChange={({ target }) => props.setUsername(target.value)} />
-          </div>
-          <div>
-            password
-            <input id='password' type="password" value = {password} name="Password" onChange={({ target }) => props.setPassword(target.value)} />
-          </div>
-          <button type="submit" id = "login-button">login</button>
-        </form>
+        <h3>Login</h3>
+        <Form onSubmit = {props.handleLogin}>
+          <Form.Group>
+            <Form.Label>username</Form.Label>
+            <Form.Control id = "username" type="text" value = {username} name="Username" onChange={({ target }) => props.setUsername(target.value)} />
+            <Form.Label>password</Form.Label>
+            <Form.Control id='password' type="password" value = {password} name="Password" onChange={({ target }) => props.setPassword(target.value)}/>
+            <Button  variant="primary" type="submit" id = "login-button">login</Button>
+          </Form.Group>
+        </Form>
       </div>
     )
   }
   const userLogged = () => {
     return (
       <>
-        <>{user.name} logged in</>
-        <button type = "button" onClick = {props.logOut}>log out</button>
+        <>{user.name} logged </>
+        <button style = {{ padding : 5 }}type = "button" onClick = {props.logOut}>logout</button>
       </>
     )}
   if (user === null) return userNotLogged()
@@ -93,12 +92,17 @@ const CreateNewBlog = ( { user, title, author, url, setTitle, setAuthor, setUrl,
     return(
       <div>
         <h2>Create new</h2>
-        <form onSubmit = {handlePost} id = "form">
-          <div>title:<input id='title' type = 'text' value = {title} name = 'title' onChange = {({ target }) => setTitle(target.value)} /></div>
-          <div>author: <input id='author' type = 'text' value = {author} name = 'author' onChange = {({ target }) => setAuthor(target.value)}/></div>
-          <div>url: <input id='url' type = 'text' value = {url} name = 'url' onChange = {({ target }) => setUrl(target.value)}/></div>
-          <button type="submit" id="button">create</button>
-        </form>
+        <Form onSubmit = {handlePost} id = "form">
+          <Form.Group>
+            <Form.Label>title</Form.Label>
+            <Form.Control id='title' type = 'text' value = {title} name = 'title' onChange = {({ target }) => setTitle(target.value)} />
+            <Form.Label>author:</Form.Label>
+            <Form.Control id='author' type = 'text' value = {author} name = 'author' onChange = {({ target }) => setAuthor(target.value)}/>
+            <Form.Label>URL</Form.Label>
+            <Form.Control id='url' type = 'text' value = {url} name = 'url' onChange = {({ target }) => setUrl(target.value)}/>
+            <Button type="submit" variant="primary" id="button">create</Button>
+          </Form.Group>
+        </Form>
       </div>
     )}
   else return <></>
@@ -138,14 +142,14 @@ Togglable.propTypes = {
 const Notification = (props) => {
   const notification = useSelector(state => state.notification)
   if (notification !== null) return (
-    <div className = "noti">
+    <Alert className = "noti" variant={'info'}>
       <p>{notification}</p>
-    </div>
+    </Alert>
   )
   if (props.errorMessage !== null) return (
-    <div className ="err">
+    <Alert className ="err" variant = {'danger'}>
       Error: {props.errorMessage}
-    </div>
+    </Alert>
   )
   return <></>
 }
@@ -223,14 +227,19 @@ const App = () => {
 
   //console.log(users)
   return (
-    <div>
-      <div>
-        <Link style ={{ padding: 5 }}to='/'>Blogs</Link>
-        <Link style ={{ padding: 5 }} to='/users'>Users</Link>
-        <Login user = {user} username = {username} password={password} setUsername = {setUsername} setPassword = {setPassword} handleLogin = {handleLogin} logOut = {logOut}/>
-      </div>
+    <div className="container">
+      <Navbar sticky="top" bg = "ligth">
+        <Nav.Link href="#" as="span">
+          <Link style ={{ padding: 5 }}to='/'>Blogs</Link>
+        </Nav.Link>
+        <Nav.Link href="#" as="span">
+          <Link style ={{ padding: 5 }} to='/users'>Users</Link>
+        </Nav.Link>
+        {user ? <Login user = {user} username = {username} password={password} setUsername = {setUsername} setPassword = {setPassword} handleLogin = {handleLogin} logOut = {logOut}/> : <></> }
+      </Navbar>
       <h1>Blogs</h1>
       <Notification errorMessage = {errorMessage}/>
+      {!user ? <Login user = {user} username = {username} password={password} setUsername = {setUsername} setPassword = {setPassword} handleLogin = {handleLogin} logOut = {logOut}/> : <></> }
       <Switch>
         <Route path = "/users/:id">
           <SingleUser users = {users} />
